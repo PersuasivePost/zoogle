@@ -1,0 +1,205 @@
+# Zoogle
+
+A simple, plug-and-play Google OAuth 2.0 library for Express.js applications. Get Google login working in 5 minutes.
+
+## ✨ Features
+
+- 🚀 **Fast Setup** – Get running with just 5 lines of configuration.  
+- 🔒 **Secure** – Uses JWTs for session management.  
+- 🧩 **Flexible** – Custom success and error handlers.  
+- 📦 **Lightweight** – Minimal dependencies for easy integration.  
+
+---
+
+## 📦 Installation
+
+```bash
+npm install google-oauth-easy express jsonwebtoken axios
+npm install -D @types/express
+````
+
+---
+
+## ⚡ Quick Start Guide
+
+Here’s a complete, working example of Google OAuth with Express.js.
+
+### 1️⃣ Create `server.js`
+
+```javascript
+const express = require('express');
+const googleAuth = require('google-oauth-easy').default;
+
+const app = express();
+
+// A simple in-memory database
+const users = [];
+
+// 1. Define your findOrCreateUser function
+const findOrCreateUser = async (profile) => {
+  let user = users.find(u => u.googleId === profile.id);
+  if (!user) {
+    user = { id: users.length + 1, ...profile };
+    users.push(user);
+  }
+  return user;
+};
+
+// 2. Configure the library
+googleAuth.configure({
+  google: {
+    clientId: 'YOUR_GOOGLE_CLIENT_ID',
+    clientSecret: 'YOUR_GOOGLE_CLIENT_SECRET',
+    callbackURL: 'http://localhost:3000/auth/google/callback',
+  },
+  jwt: {
+    secret: 'YOUR_SUPER_SECRET_JWT_KEY',
+  },
+  findOrCreateUser: findOrCreateUser,
+  onSuccess: (user, token, req, res) => {
+    // Redirect to a frontend app or send token
+    res.redirect(`/profile?token=${token}`);
+  }
+});
+
+// 3. Mount the auth routes
+app.use('/auth/google', googleAuth.routes);
+
+// 4. Create a protected route
+app.get('/profile', googleAuth.middleware, (req, res) => {
+  res.json({
+    message: 'This is protected!',
+    user: req.user,
+  });
+});
+
+// 5. Create a public route
+app.get('/', (req, res) => {
+  res.send('<a href="/auth/google/login">Login with Google</a>');
+});
+
+app.listen(3000, () => {
+  console.log('✅ Server running on http://localhost:3000');
+});
+```
+
+---
+
+## 🔑 Get Google OAuth Credentials
+
+1. Go to the [Google Cloud Console](https://console.cloud.google.com/).
+2. Create a **new project**.
+3. Go to **APIs & Services → Credentials**.
+4. Click **Create Credentials → OAuth client ID**.
+5. Choose **Web Application** and add the following redirect URIs:
+
+   * Local: `http://localhost:3000/auth/google/callback`
+   * Production: `https://yourdomain.com/auth/google/callback`
+6. Copy your **Client ID** and **Client Secret**.
+
+---
+
+## ⚙️ Configuration
+
+Update the following in `server.js`:
+
+| Option                | Description                              |
+| --------------------- | ---------------------------------------- |
+| `google.clientId`     | Your Google OAuth **Client ID**          |
+| `google.clientSecret` | Your Google OAuth **Client Secret**      |
+| `google.callbackURL`  | The URL registered in Google Console     |
+| `jwt.secret`          | Strong secret key for signing JWT tokens |
+
+---
+
+## ▶️ Run the Server
+
+```bash
+node server.js
+```
+
+Then visit:
+👉 [http://localhost:3000](http://localhost:3000)
+
+Click **Login with Google** and test it!
+
+---
+
+## 🧠 API Reference
+
+### `googleAuth.configure(options)`
+
+Call this once when your server starts.
+
+| Option                             | Type     | Required | Description                                             |
+| ---------------------------------- | -------- | -------- | ------------------------------------------------------- |
+| `google.clientId`                  | string   | ✅        | Your Google Client ID                                   |
+| `google.clientSecret`              | string   | ✅        | Your Google Client Secret                               |
+| `google.callbackURL`               | string   | ✅        | Your Google OAuth callback URL                          |
+| `jwt.secret`                       | string   | ✅        | Secret for signing JWTs                                 |
+| `jwt.expiresIn`                    | string   | ❌        | Token expiration (e.g. `"7d"`, `"1h"`) — default `"7d"` |
+| `findOrCreateUser(profile)`        | function | ✅        | Async function returning user object                    |
+| `onSuccess(user, token, req, res)` | function | ❌        | Custom success handler                                  |
+| `onError(error, req, res)`         | function | ❌        | Custom error handler                                    |
+
+---
+
+### `googleAuth.routes`
+
+Provides built-in Express routes:
+
+| Route                       | Description                |
+| --------------------------- | -------------------------- |
+| `GET /auth/google/login`    | Starts Google OAuth flow   |
+| `GET /auth/google/callback` | Handles the OAuth callback |
+
+Usage:
+
+```javascript
+app.use('/auth/google', googleAuth.routes);
+```
+
+---
+
+### `googleAuth.middleware`
+
+Protect routes using JWT authentication.
+
+```javascript
+app.get('/api/secret', googleAuth.middleware, (req, res) => {
+  res.json({
+    message: 'Top secret data',
+    user: req.user
+  });
+});
+```
+
+---
+
+## 🧩 Example Folder Structure
+
+```
+my-app/
+├── node_modules/
+├── server.js
+├── package.json
+└── README.md
+```
+
+---
+
+## 🪪 License
+
+MIT License © 2025
+See [LICENSE](LICENSE) for full details.
+
+---
+
+**Made with ❤️ for developers who just want Google login to *work*.**
+
+```
+
+---
+
+✅ You can **copy this entire block** (everything between the gray lines) and paste it directly into your `README.md` — no edits needed except your client credentials.
+```
