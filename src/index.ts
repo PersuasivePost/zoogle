@@ -1,3 +1,5 @@
+export * from './types';
+
 import { config } from './core/config';
 import { authRoutes } from './adapters/routes';
 import { requireAuth } from './middleware/auth';

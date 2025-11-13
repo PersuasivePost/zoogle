@@ -2,7 +2,8 @@
   "name": "zoogle",
   "version": "1.0.0",
   "description": "zero boilerplate oauth handler",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "directories": {
     "example": "examples"
   },
@@ -19,6 +20,12 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "files": [
+    "dist"
+  ],
+  "peerDependencies": {
+    "express": "^4.0.0 || ^5.0.0"
+  },
   "bugs": {
     "url": "https://github.com/PersuasivePost/zoogle/issues"
   },
@@ -32,13 +39,13 @@
     "eslint": "^8.57.1",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.4",
+    "express": "^5.1.0",
     "prettier": "^3.6.2",
     "typescript": "^5.9.3"
   },
   "dependencies": {
     "axios": "^1.13.2",
     "dotenv": "^17.2.3",
-    "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2"
   }
 }
