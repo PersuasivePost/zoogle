@@ -5,31 +5,24 @@ import {
   FindOrCreateUserFn,
   SuccessHandler,
   ErrorHandler,
-} from '../types'; // Import our "shapes" from Step 2
+} from '../types';
 
-// This class will hold all our settings
 class Config {
-  // --- Google Settings ---
   public google: GoogleConfig = {
     clientId: '',
     clientSecret: '',
     callbackURL: '',
   };
 
-  // --- JWT Settings ---
   public jwt: JWTConfig = {
     secret: '',
     expiresIn: '7d', // Default to 7 days
   };
 
-  // --- User-provided Functions ---
   public findOrCreateUser: FindOrCreateUserFn | null = null;
   public onSuccess: SuccessHandler | null = null;
   public onError: ErrorHandler | null = null;
 
-  /**
-   * Loads the user's options into our config object.
-   */
   public set(options: LibraryOptions): void {
     if (options.google) {
       this.google = { ...this.google, ...options.google };
@@ -52,9 +45,6 @@ class Config {
     }
   }
 
-  /**
-   * Checks that all required settings have been provided.
-   */
   public validate(): void {
     if (!this.google.clientId) {
       throw new Error('Google [clientId] is required.');
@@ -74,6 +64,4 @@ class Config {
   }
 }
 
-// Create and export a SINGLETON instance.
-// This means the entire library will share this one config object.
 export const config = new Config();
