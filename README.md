@@ -85,7 +85,7 @@ Protects routes. Checks for valid JWT in `Authorization: Bearer <token>` header.
 
 ## Error Handling
 
-Zoogle provides comprehensive error handling with custom error classes and helpful error messages. See the detailed [Error Handling Guide](./ERROR_HANDLING.md) for:
+Zoogle provides comprehensive error handling with custom error classes and helpful error messages. See the detailed [Error Handling Guide](./archives/ERROR_HANDLING.md) for:
 
 - 📋 **Configuration Errors** - Catch missing or invalid config at startup
 - 🔄 **Runtime Errors** - Handle OAuth and database errors gracefully  
@@ -128,7 +128,7 @@ axios.interceptors.response.use(
 );
 ```
 
-👉 **[Read the full Error Handling Guide](./ERROR_HANDLING.md)**
+👉 **[Read the full Error Handling Guide](./archives/ERROR_HANDLING.md)**
 
 ## Examples
 
