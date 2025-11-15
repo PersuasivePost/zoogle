@@ -6,6 +6,11 @@ import { requireAuth } from './middleware/auth';
 import { LibraryOptions, ZoogleConfigError } from './types';
 
 class GoogleOAuthEasy {
+  /**
+   * Configures the Zoogle library. Must be called once at startup.
+   *
+   * @param options Configuration options (google, jwt, findOrCreateUser, callbacks)
+   */
   public configure(options: LibraryOptions): void {
     config.set(options);
 
@@ -32,11 +37,24 @@ class GoogleOAuthEasy {
     }
   }
 
+  /**
+   * The Express router containing the `/login` and `/callback` endpoints.
+   *
+   * @example
+   * app.use('/auth/google', googleAuth.routes);
+   */
   // routes
   public get routes() {
     return authRoutes;
   }
 
+  /**
+   * Express middleware to protect routes. Verifies `Authorization: Bearer <token>`
+   * and attaches the decoded user to `req.user` on success.
+   *
+   * @example
+   * app.get('/profile', googleAuth.middleware, (req, res) => { res.json(req.user) });
+   */
   // middleware
   public get middleware() {
     return requireAuth;
