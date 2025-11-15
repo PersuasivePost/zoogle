@@ -62,3 +62,7 @@ class GoogleOAuthEasy {
 }
 
 export default new GoogleOAuthEasy();
+
+// Re-export utility helpers
+export { commonHandlers } from './utils/handlers';
+export { loadFromEnv } from './utils/env';
