@@ -83,6 +83,53 @@ Express router with two routes:
 
 Protects routes. Checks for valid JWT in `Authorization: Bearer <token>` header.
 
+## Error Handling
+
+Zoogle provides comprehensive error handling with custom error classes and helpful error messages. See the detailed [Error Handling Guide](./ERROR_HANDLING.md) for:
+
+- 📋 **Configuration Errors** - Catch missing or invalid config at startup
+- 🔄 **Runtime Errors** - Handle OAuth and database errors gracefully  
+- 🔐 **Authentication Errors** - Use error codes for reliable frontend handling
+
+Quick example:
+
+```typescript
+import googleAuth, { ZoogleConfigError } from 'zoogle';
+
+try {
+  googleAuth.configure({
+    // ... your config
+  });
+} catch (error) {
+  if (error instanceof ZoogleConfigError) {
+    console.error('Config field:', error.field);
+    console.error('How to fix:', error.hint);
+  }
+}
+```
+
+Frontend token handling:
+
+```typescript
+// Reliable error handling with error codes
+axios.interceptors.response.use(
+  response => response,
+  error => {
+    const { error_code } = error.response?.data || {};
+    
+    if (error_code === 'token_expired') {
+      return refreshToken().then(retry);
+    }
+    
+    if (error_code === 'token_invalid') {
+      redirectToLogin();
+    }
+  }
+);
+```
+
+👉 **[Read the full Error Handling Guide](./ERROR_HANDLING.md)**
+
 ## Examples
 
 See [examples/](./examples) folder.

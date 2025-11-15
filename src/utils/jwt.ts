@@ -1,6 +1,6 @@
 import * as jwt from 'jsonwebtoken';
 import { config } from '../core/config';
-import { AppUser } from '../types';
+import { AppUser, ZoogleAuthError } from '../types';
 
 class JWTUtils {
   public generateToken(user: AppUser): string {
@@ -16,13 +16,16 @@ class JWTUtils {
     return token;
   }
 
-  public verifyToken(token: string): AppUser | null {
+  public verifyToken(token: string): AppUser {
     try {
-  const decoded = (jwt as any).verify(token, config.jwt.secret);
+      const decoded = (jwt as any).verify(token, config.jwt.secret);
 
       // jwt.verify can return a string or an object (JwtPayload). We expect an object with id/email.
       if (typeof decoded === 'string' || decoded === null) {
-        return null;
+        throw new ZoogleAuthError(
+          'token_invalid',
+          'Token verification failed: Invalid token format',
+        );
       }
 
       const payload = decoded as jwt.JwtPayload;
@@ -36,8 +39,39 @@ class JWTUtils {
       };
 
       return user;
-    } catch (error) {
-      return null;
+    } catch (error: any) {
+      // Check if it's already our custom error
+      if (error instanceof ZoogleAuthError) {
+        throw error;
+      }
+
+      // Handle specific JWT errors
+      if (error.name === 'TokenExpiredError') {
+        throw new ZoogleAuthError(
+          'token_expired',
+          'Token has expired. Please log in again.',
+        );
+      }
+
+      if (error.name === 'JsonWebTokenError') {
+        throw new ZoogleAuthError(
+          'token_invalid',
+          'Invalid token signature or format.',
+        );
+      }
+
+      if (error.name === 'NotBeforeError') {
+        throw new ZoogleAuthError(
+          'token_invalid',
+          'Token is not yet valid.',
+        );
+      }
+
+      // Unknown JWT error
+      throw new ZoogleAuthError(
+        'token_invalid',
+        'Token verification failed: ' + error.message,
+      );
     }
   }
 }

@@ -50,3 +50,12 @@ export type ErrorHandler = (
   res: Response,
   next: NextFunction,
 ) => void;
+
+// Re-export error classes
+export {
+  ZoogleError,
+  ZoogleConfigError,
+  ZoogleOAuthError,
+  ZoogleDatabaseError,
+  ZoogleAuthError,
+} from '../errors';
