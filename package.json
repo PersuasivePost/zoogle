@@ -1,6 +1,6 @@
 {
   "name": "zoogle",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Self-contained Google OAuth for Express: setup in 2 minutes",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
