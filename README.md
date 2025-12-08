@@ -1,6 +1,6 @@
 # 🔐 Zoogle - Google OAuth in 2 Minutes
 
-Drop-in Google OAuth for Express. No Passport.js needed.
+Drop-in Google OAuth for **Express** and **Next.js**. No Passport.js needed.
 
 ## Install
 
@@ -8,16 +8,9 @@ Drop-in Google OAuth for Express. No Passport.js needed.
 npm install zoogle
 ```
 
-## Setup (3 steps)
+## Quick Start
 
-### 1. Get Google Credentials
-
-1. Go to [Google Cloud Console](https://console.cloud.google.com)
-2. Create project → Enable Google+ API → Create OAuth credentials
-3. Add redirect URL: `http://localhost:3000/auth/google/callback`
-4. Copy your `CLIENT_ID` and `CLIENT_SECRET`
-
-### 2. Configure
+### For Express
 
 ```typescript
 import express from 'express';
@@ -42,25 +35,93 @@ googleAuth.configure({
 
 // Mount routes
 app.use('/auth/google', googleAuth.routes);
-```
 
-### 3. Use
-
-**Frontend:**
-
-```html
-<a href="/auth/google/login">Login with Google</a>
-```
-
-**Protect routes:**
-
-```typescript
+// Protect routes
 app.get('/profile', googleAuth.middleware, (req, res) => {
   res.json({ user: req.user });
 });
 ```
 
+### For Next.js
+
+#### 1. Create config file
+
+```typescript
+// lib/zoogle.ts
+import googleAuth from 'zoogle';
+
+googleAuth.configure({
+  google: {
+    clientId: process.env.GOOGLE_CLIENT_ID!,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+    callbackURL: 'http://localhost:3000/auth/google/callback',
+  },
+  jwt: {
+    secret: process.env.JWT_SECRET!,
+  },
+  async findOrCreateUser(profile) {
+    // Your database logic
+    return await User.findOrCreate({ googleId: profile.id });
+  },
+  onSuccess: (user, token, req, res) => {
+    (res as any).redirect(`/?token=${token}`);
+  },
+});
+
+export default googleAuth;
+```
+
+#### 2. Create API routes
+
+```typescript
+// pages/auth/google/login.ts
+import googleAuth from '../../lib/zoogle';
+export default googleAuth.nextjs.loginHandler;
+```
+
+```typescript
+// pages/auth/google/callback.ts
+import googleAuth from '../../lib/zoogle';
+export default googleAuth.nextjs.callbackHandler;
+```
+
+#### 3. Protect routes
+
+```typescript
+// pages/api/profile.ts
+import { withAuth } from 'zoogle';
+
+async function handler(req, res) {
+  res.json({ user: req.user });
+}
+
+export default withAuth(handler);
+```
+
+#### 4. Frontend
+
+```tsx
+// Login button
+<a href="/api/auth/google/login">
+  <button>Login with Google</button>
+</a>;
+
+// Make authenticated requests
+fetch('/api/profile', {
+  headers: {
+    Authorization: `Bearer ${token}`,
+  },
+});
+```
+
 Done! 🎉
+
+## Setup (Get Google Credentials)
+
+1. Go to [Google Cloud Console](https://console.cloud.google.com)
+2. Create project → Enable Google+ API → Create OAuth credentials
+3. Add redirect URL: `http://localhost:3000/auth/google/callback` (Express) or `http://localhost:3000/api/auth/google/callback` (Next.js)
+4. Copy your `CLIENT_ID` and `CLIENT_SECRET`
 
 ## API
 
@@ -87,6 +148,36 @@ Express router with two routes:
 ### `googleAuth.middleware`
 
 Protects routes. Checks for valid JWT in `Authorization: Bearer <token>` header.
+
+### `googleAuth.nextjs`
+
+Object containing Next.js-specific handlers:
+
+- `loginHandler` - API route handler for login
+- `callbackHandler` - API route handler for callback
+- `withAuth` - Higher-order function to protect API routes
+
+### `withAuth(handler)`
+
+Protects Next.js API routes. Wrap your handler with this function:
+
+```typescript
+import { withAuth } from 'zoogle';
+
+export default withAuth(async (req, res) => {
+  // req.user is available here
+  res.json({ user: req.user });
+});
+```
+
+## Framework Support
+
+| Framework              | Status |
+| ---------------------- | ------ |
+| Express                | ✅     |
+| Next.js (Pages Router) | ✅     |
+| Next.js (App Router)   | 🔄     |
+| Fastify                | 🔄     |
 
 ## Error Handling
 
@@ -138,6 +229,9 @@ axios.interceptors.response.use(
 ## Examples
 
 See [examples/](./examples) folder.
+
+- **[Express Example](./examples/basic-express)** - Basic Express setup
+- **[Next.js Example](./examples/nextjs-app)** - Complete Next.js app with frontend
 
 ### Login Template Example
 

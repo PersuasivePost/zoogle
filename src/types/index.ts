@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
+import { NextApiRequest, NextApiResponse } from 'next';
 
 /**
  * Google OAuth configuration options.
@@ -17,7 +18,7 @@ export interface GoogleConfig {
    * Make sure this exact URL is registered in the Google Cloud Console
    * under "Authorized redirect URIs".
    *
-   * @example "http://localhost:3000/auth/callback"
+   * @example "http://localhost:3000/auth/google/callback"
    */
   callbackURL: string;
 }
@@ -108,20 +109,26 @@ export type FindOrCreateUserFn = (
   profile: GoogleUserProfile,
 ) => Promise<AppUser>;
 
-/** Optional success handler called after a successful login. */
+/**
+ * Optional success handler called after a successful login.
+ * Works with both Express and Next.js request/response objects.
+ */
 export type SuccessHandler = (
   user: AppUser,
   token: string,
-  req: Request,
-  res: Response,
+  req: Request | NextApiRequest,
+  res: Response | NextApiResponse,
   next: NextFunction,
 ) => void;
 
-/** Optional error handler for the authentication flow. */
+/**
+ * Optional error handler for the authentication flow.
+ * Works with both Express and Next.js request/response objects.
+ */
 export type ErrorHandler = (
   error: Error,
-  req: Request,
-  res: Response,
+  req: Request | NextApiRequest,
+  res: Response | NextApiResponse,
   next: NextFunction,
 ) => void;
 

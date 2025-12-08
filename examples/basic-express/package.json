@@ -2,7 +2,8 @@
   "name": "zoogle-example",
   "private": true,
   "scripts": {
-    "dev": "ts-node src/app.ts"
+    "dev": "node app.js",
+    "dev:ts": "ts-node app.ts"
   },
   "dependencies": {
     "express": "^4.18.0",

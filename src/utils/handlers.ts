@@ -1,17 +1,17 @@
 import { SuccessHandler } from '../types';
-import { Request, Response, NextFunction } from 'express';
 
 /**
  * Common success handlers (pre-built) for post-login behavior.
  * Exported so library users can pick a handler instead of writing one.
+ * Note: These handlers are designed for Express. For Next.js, use custom handlers.
  */
 export const commonHandlers = {
   /**
    * Default JSON response handler. Returns { success: true, token, user }.
    */
   jsonResponse(): SuccessHandler {
-    return (user, token, req: Request, res: Response) => {
-      res.json({ success: true, token, user });
+    return (user, token, req, res) => {
+      (res as any).json({ success: true, token, user });
     };
   },
 
@@ -22,15 +22,18 @@ export const commonHandlers = {
    * @param url Destination URL to redirect to
    */
   redirectWithToken(url: string): SuccessHandler {
-    return (user, token, req: Request, res: Response) => {
+    return (user, token, req, res) => {
       const separator = url.includes('?') ? '&' : '?';
-      res.redirect(`${url}${separator}token=${encodeURIComponent(token)}`);
+      (res as any).redirect(
+        `${url}${separator}token=${encodeURIComponent(token)}`,
+      );
     };
   },
 
   /**
    * Returns a SuccessHandler that sets an HttpOnly cookie with the token and redirects.
    * Cookie is set with secure flag when NODE_ENV === 'production'.
+   * Note: This handler is Express-only.
    *
    * @param url Destination URL
    * @param cookieName Cookie name to use (defaults to 'token')
@@ -41,7 +44,7 @@ export const commonHandlers = {
     cookieName = 'token',
     maxAge?: number,
   ): SuccessHandler {
-    return (user, token, req: Request, res: Response) => {
+    return (user, token, req, res) => {
       const secure = process.env.NODE_ENV === 'production';
       const cookieOptions: any = {
         httpOnly: true,
@@ -49,8 +52,8 @@ export const commonHandlers = {
       };
       if (typeof maxAge === 'number') cookieOptions.maxAge = maxAge;
 
-      res.cookie(cookieName, token, cookieOptions);
-      res.redirect(url);
+      (res as any).cookie(cookieName, token, cookieOptions);
+      (res as any).redirect(url);
     };
   },
 };

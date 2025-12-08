@@ -3,6 +3,8 @@ export * from './types';
 import { config } from './core/config';
 import { authRoutes } from './adapters/routes';
 import { requireAuth } from './middleware/auth';
+import { nextjsAdapter } from './adapters/nextjs';
+import { withAuth } from './middleware/nextjs-auth';
 import { LibraryOptions, ZoogleConfigError } from './types';
 
 class GoogleOAuthEasy {
@@ -59,6 +61,29 @@ class GoogleOAuthEasy {
   public get middleware() {
     return requireAuth;
   }
+
+  /**
+   * Next.js handlers and middleware for API routes.
+   *
+   * @example
+   * // pages/auth/google/login.ts
+   * import googleAuth from 'zoogle';
+   * export default googleAuth.nextjs.loginHandler;
+   *
+   * // pages/auth/google/callback.ts
+   * export default googleAuth.nextjs.callbackHandler;
+   *
+   * // pages/api/profile.ts (protected route)
+   * import { withAuth } from 'zoogle';
+   * export default withAuth(handler);
+   */
+  public get nextjs() {
+    return {
+      loginHandler: nextjsAdapter.loginHandler,
+      callbackHandler: nextjsAdapter.callbackHandler,
+      withAuth: withAuth,
+    };
+  }
 }
 
 export default new GoogleOAuthEasy();
@@ -66,3 +91,6 @@ export default new GoogleOAuthEasy();
 // Re-export utility helpers
 export { commonHandlers } from './utils/handlers';
 export { loadFromEnv } from './utils/env';
+
+// Re-export Next.js middleware for convenience
+export { withAuth } from './middleware/nextjs-auth';
