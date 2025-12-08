@@ -1,6 +1,10 @@
-import { Request, Response, NextFunction } from 'express';
 import { jwtUtils } from '../utils/jwt';
 import { AppUser, ZoogleAuthError } from '../types';
+
+// Version-agnostic Express types
+type Request = any;
+type Response = any;
+type NextFunction = any;
 
 declare global {
   namespace Express {
@@ -23,7 +27,8 @@ export const requireAuth = (
     return res.status(401).json({
       success: false,
       error_code: 'token_missing',
-      message: 'No authorization token provided. Please include an Authorization header with "Bearer <token>".',
+      message:
+        'No authorization token provided. Please include an Authorization header with "Bearer <token>".',
     });
   }
 

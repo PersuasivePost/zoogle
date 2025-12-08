@@ -1,10 +1,28 @@
-import { Router, Request, Response, NextFunction } from 'express';
+// Version-agnostic Express types
+type Router = any;
+type Request = any;
+type Response = any;
+type NextFunction = any;
+
 import { config } from '../core/config';
 import { oauth } from '../core/oauth';
 import { jwtUtils } from '../utils/jwt';
 import { ZoogleOAuthError, ZoogleDatabaseError } from '../types';
 
-export const authRoutes = Router();
+// Create router using dynamic require to support any Express version
+const createRouter = () => {
+  try {
+    // Try requiring express
+    const express = require('express');
+    return express.Router();
+  } catch (error) {
+    throw new Error(
+      'Express is required for Zoogle routes. Please install express.',
+    );
+  }
+};
+
+export const authRoutes = createRouter();
 
 authRoutes.get('/login', (req: Request, res: Response) => {
   try {
@@ -83,7 +101,7 @@ authRoutes.get(
         console.error('\n❌ Zoogle Runtime Error: Database Operation Failed');
         console.error('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
         console.error('The findOrCreateUser function failed.');
-        console.error('This means there\'s an issue with YOUR database logic.');
+        console.error("This means there's an issue with YOUR database logic.");
         console.error('\nWhat to check:');
         console.error('  → Is your database connection working?');
         console.error('  → Does the user table/collection exist?');
@@ -98,7 +116,9 @@ authRoutes.get(
         console.error('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
       } else {
         // Unknown error
-        console.error('\n❌ Zoogle Runtime Error: Unknown error during authentication');
+        console.error(
+          '\n❌ Zoogle Runtime Error: Unknown error during authentication',
+        );
         console.error('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
         console.error('Error:', error);
         console.error('Stack:', error.stack);
@@ -115,19 +135,22 @@ authRoutes.get(
           res.status(500).json({
             success: false,
             error_code: 'oauth_failed',
-            message: 'Authentication with Google failed. Please try again or contact support.',
+            message:
+              'Authentication with Google failed. Please try again or contact support.',
           });
         } else if (error instanceof ZoogleDatabaseError) {
           res.status(500).json({
             success: false,
             error_code: 'database_error',
-            message: 'Failed to create your account. Please try again or contact support.',
+            message:
+              'Failed to create your account. Please try again or contact support.',
           });
         } else {
           res.status(500).json({
             success: false,
             error_code: 'unknown_error',
-            message: 'Authentication failed. Please try again or contact support.',
+            message:
+              'Authentication failed. Please try again or contact support.',
           });
         }
       }

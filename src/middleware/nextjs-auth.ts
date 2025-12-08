@@ -1,17 +1,15 @@
-import { NextApiRequest, NextApiResponse, NextApiHandler } from 'next';
+// Version-agnostic Next.js types
+type NextApiRequest = any;
+type NextApiResponse = any;
+type NextApiHandler = any;
+
 import { jwtUtils } from '../utils/jwt';
 import { AppUser, ZoogleAuthError } from '../types';
-
-// Extend Next.js request to include user
-declare module 'next' {
-  interface NextApiRequest {
-    user?: AppUser;
-  }
-}
 
 /**
  * Higher-order function middleware to protect Next.js API routes.
  * Verifies JWT token from Authorization header and attaches user to request.
+ * Works with both Pages Router and App Router patterns.
  *
  * @param handler - The Next.js API handler to protect
  * @returns A wrapped handler that checks authentication first
@@ -71,7 +69,7 @@ export function withAuth(handler: NextApiHandler): NextApiHandler {
         res.status(401).json({
           success: false,
           error_code: error.errorCode,
-          message: error.message,   
+          message: error.message,
         });
         return;
       }

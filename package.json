@@ -1,6 +1,6 @@
 {
   "name": "zoogle",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "Self-contained Google OAuth for Express and Next.js: setup in 2 minutes",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -43,8 +43,8 @@
     "dist"
   ],
   "peerDependencies": {
-    "express": "^4.0.0 || ^5.0.0",
-    "next": "^13.0.0 || ^14.0.0 || ^15.0.0"
+    "express": ">=4.0.0",
+    "next": ">=13.0.0"
   },
   "peerDependenciesMeta": {
     "express": {
@@ -59,7 +59,7 @@
   },
   "homepage": "https://github.com/PersuasivePost/zoogle#readme",
   "devDependencies": {
-    "@types/express": "^5.0.5",
+    "@types/express": "^4.17.0",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^24.10.1",
     "@typescript-eslint/eslint-plugin": "^8.46.4",
@@ -67,8 +67,8 @@
     "eslint": "^8.57.1",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.4",
-    "express": "^5.1.0",
-    "next": "^14.0.0",
+    "express": "^4.0.0",
+    "next": "^13.0.0",
     "prettier": "^3.6.2",
     "typescript": "^5.9.3"
   },

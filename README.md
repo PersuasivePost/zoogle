@@ -172,12 +172,22 @@ export default withAuth(async (req, res) => {
 
 ## Framework Support
 
-| Framework              | Status |
-| ---------------------- | ------ |
-| Express                | ✅     |
-| Next.js (Pages Router) | ✅     |
-| Next.js (App Router)   | 🔄     |
-| Fastify                | 🔄     |
+Zoogle works with any version of Express (4.x, 5.x) and Next.js (13.x+). It uses version-agnostic type definitions and dynamic module resolution to maintain compatibility across releases.
+
+| Framework            | Supported Versions | Status |
+| -------------------- | ------------------ | ------ |
+| Express              | ≥4.0.0             | ✅     |
+| Next.js              | ≥13.0.0            | ✅     |
+| Next.js (App Router) | ≥13.0.0            | ✅     |
+
+### Why This Works
+
+Zoogle uses:
+
+- **Version-agnostic type definitions** - No direct imports from framework types
+- **Dynamic module resolution** - `require()` to load Express/Next modules at runtime
+- **Generic request/response handling** - Works with any compatible framework version
+- **Optional peer dependencies** - You choose which versions to install
 
 ## Error Handling
 

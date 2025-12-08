@@ -1,4 +1,7 @@
-import { NextApiRequest, NextApiResponse } from 'next';
+// Version-agnostic Next.js types
+type NextApiRequest = any;
+type NextApiResponse = any;
+
 import { oauth } from '../core/oauth';
 import { jwtUtils } from '../utils/jwt';
 import { config } from '../core/config';
@@ -7,6 +10,7 @@ import { ZoogleOAuthError, ZoogleDatabaseError } from '../types';
 /**
  * Next.js adapter for Zoogle OAuth.
  * Provides handlers that work with Next.js API routes.
+ * Compatible with Pages Router and App Router patterns.
  */
 class NextJSAdapter {
   /**

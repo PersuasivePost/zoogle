@@ -1,5 +1,11 @@
-import { Request, Response, NextFunction } from 'express';
-import { NextApiRequest, NextApiResponse } from 'next';
+// Version-agnostic Express types
+export type Request = any;
+export type Response = any;
+export type NextFunction = any;
+
+// Version-agnostic Next.js types
+export type NextApiRequest = any;
+export type NextApiResponse = any;
 
 /**
  * Google OAuth configuration options.
